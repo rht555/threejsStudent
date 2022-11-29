@@ -13,7 +13,6 @@ let renderer;
 //声明辅助轴
 let axesHelper;
 //声明一个cube
-let cube;
 //声明天空盒
 let skyBox;
 //监听窗口变化
