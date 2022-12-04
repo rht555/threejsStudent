@@ -121,6 +121,7 @@ function animate() {
 }
 function render(e) {
     const delta = clock.getDelta()
+    console.log(delta);
     renderer.render(scene, camera)
     mixer.update(delta)
 }
