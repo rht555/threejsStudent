@@ -124,15 +124,16 @@ export default class MyTHRRE {
             size: [5, 5, 5],
             position: [0, 0, 0],
             mass: 0,
-            rotation: [0, 0, 0],
             material: new THREE.MeshPhongMaterial({ color: Math.random() * 0xffffff }),
             isPhysics: false,
-            quaternion: [0, 0, 0, 1],
+            quaternion: new THREE.Quaternion(0, 0, 0, 1),
+            friction: 1,
+            isMesh:true
         }, options);
         let geometry = new THREE.BoxGeometry(...options.size);
         let cube = new THREE.Mesh(geometry, options.material);
         cube.position.set(...options.position);
-        cube.rotation.set(...options.rotation);
+        cube.rotation.set(options.quaternion.x, options.quaternion.y, options.quaternion.z);
         cube.castShadow = true;
         cube.receiveShadow = true;
         cube.mass = options.mass;
@@ -141,17 +142,30 @@ export default class MyTHRRE {
             //物理世界的初始化
             let transform = new Ammo.btTransform();
             transform.setIdentity();
-            transform.setOrigin(new Ammo.btVector3(options.position[0], options.position[1], options.position[2]));
-            transform.setRotation(new Ammo.btQuaternion(options.quaternion[0], options.quaternion[1], options.quaternion[2], options.quaternion[3]));
+            transform.setOrigin(new Ammo.btVector3(options.position[0], options.position[1], options.position[2])); //设置物体的位置
+            transform.setRotation(new Ammo.btQuaternion(options.quaternion.x, options.quaternion.y, options.quaternion.z, options.quaternion.w)); //设置物体的旋转
             let boxShape = new Ammo.btBoxShape(new Ammo.btVector3(options.size[0] / 2, options.size[1] / 2, options.size[2] / 2)); // 设置碰撞几何结构
             boxShape.setMargin(0.05);//设置碰撞几何结构的边距
             let localInertia = new Ammo.btVector3(0, 0, 0);// 设置刚体的惯性
             boxShape.calculateLocalInertia(options.mass, localInertia);//计算刚体的惯性
             let rigidBody = new Ammo.btRigidBody(new Ammo.btRigidBodyConstructionInfo(options.mass, new Ammo.btDefaultMotionState(transform), boxShape, localInertia));//创建刚体
-            rigidBody.setFriction(0.5);//设置刚体的摩擦力
+            rigidBody.setFriction(options.friction);//设置刚体的摩擦力
             rigidBody.setRestitution(0.6);//设置刚体的弹性
             this.physicsWorld.addRigidBody(rigidBody);//将刚体添加到物理世界中
             cube.userData.physicsBody = rigidBody; //将刚体添加到网格对象中
+            if (!options.isMesh) {
+                rigidBody.setActivationState(4);//设置刚体的激活状态
+                return function sync(dt) {
+                    let ms = rigidBody.getMotionState();
+                    if (ms) {
+                        ms.getWorldTransform(this.transformAux1);// 获取物体的变换
+                        let p = this.transformAux1.getOrigin();// 获取物体的位置
+                        let q = this.transformAux1.getRotation();// 获取物体的旋转
+                        cube.position.set(p.x(), p.y(), p.z());// 设置物体的位置
+                        cube.quaternion.set(q.x(), q.y(), q.z(), q.w());// 设置物体的旋转
+                    }
+                }
+            }
         }
         return cube;
     }
