@@ -17,7 +17,7 @@ export default class MyTHRRE {
         near: 0.2,
         far: 2000,
         position: [0, 0, 0],
-        lookAt: [0, 0, 0]
+        lookAt: [0, -4, 0]
     }
     light;
     sceneOptions = {
@@ -108,11 +108,11 @@ export default class MyTHRRE {
         //渲染
         this.render();
     }
-    render() {
+    render(e) {
         //渲染
         //更新控制器
         this.controls.update();
-        if (!this.animate()) {
+        if (!this.animate(e)) {
             this.renderer.render(this.scene, this.camera);
         }
         requestAnimationFrame(this.render.bind(this));
