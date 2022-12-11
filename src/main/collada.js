@@ -27,32 +27,33 @@ t.init()
 t.addAxesHelper()
 t.render()
 t.initLoader = function () {
-    // const loader = new ColladaLoader(new THREE.LoadingManager());
-    const loader = new ColladaLoader();
-    loader.load('../assets/collada/abb_irb52_7_120.dae', function (collada) {
-        t.newVar('dae', collada.scene)
-        t.newVar('collada', collada)
-        t.dae.traverse(function (child) {
-            if (child instanceof THREE.Mesh) {
-                child.material.flatShading = true;
-                child.material.color.setHex(Math.random() * 0xffffff);
-            }
-        });
-        t.dae.scale.x = t.dae.scale.y = t.dae.scale.z = 10;
-        t.scene.add(t.dae);
-        t.setUpTween()
-        t.animate = function (e) {
-            if (tw) {
-                tw.update(e)
-            }
-            return false
-        }
-    });
-    // loader.load('../assets/collada/elf/elf.dae', function (collada) {
-    //     console.log(collada)
-    //     t.newVar("elf", collada.scene)
-    //     t.scene.add(collada.scene);
+    const loader = new ColladaLoader(new THREE.LoadingManager());
+    // const loader = new ColladaLoader();
+    // loader.load('../assets/collada/abb_irb52_7_120.dae', function (collada) {
+    //     t.newVar('dae', collada.scene)
+    //     t.newVar('collada', collada)
+    //     t.dae.traverse(function (child) {
+    //         if (child instanceof THREE.Mesh) {
+    //             child.material.flatShading = true;
+    //             child.material.color.setHex(Math.random() * 0xffffff);
+    //         }
+    //     });
+    //     t.dae.scale.x = t.dae.scale.y = t.dae.scale.z = 10;
+    //     t.scene.add(t.dae);
+    //     t.setUpTween()
+    //     t.animate = function (e) {
+    //         if (tw) {
+    //             tw.update(e)
+    //         }
+    //         return false
+    //     }
     // });
+    loader.load('../assets/collada/elf/teapot.dae', function (collada) {
+        console.log(collada)
+        collada.scene.scale.x = collada.scene.scale.y = collada.scene.scale.z = 0.1;
+        t.newVar("elf", collada.scene)
+        t.scene.add(collada.scene);
+    });
 }
 
 t.setUpTween = function () {
@@ -90,9 +91,9 @@ t.setUpTween = function () {
     }, d);
 }
 t.initLoader()
-// t.animate = function () {
-//     if (t.elf) {
-//         t.elf.rotation.z += t.clock.getDelta() * 0.5
-//     }
-//     return false
-// }
+t.animate = function () {
+    if (t.elf) {
+        t.elf.rotation.z += t.clock.getDelta() * 0.5
+    }
+    return false
+}

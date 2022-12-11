@@ -31,7 +31,8 @@ export default class MyTHRRE {
         sceneDirectionalLightShadow: {
 
         },
-        bgcolor: 0x222222
+        bgcolor: 0x222222,
+        isAutoRender: true
     }
     renderOptions = {
         shadowMapEnabled: true,
@@ -48,6 +49,7 @@ export default class MyTHRRE {
     impactNormal = new THREE.Vector3();
     test = 0;
     meshList = [];
+
     constructor(options) {
         this.cameraOptions = Object.assign(this.cameraOptions, options?.cameraOptions);
         this.sceneOptions = Object.assign(this.sceneOptions, options?.sceneOptions);
@@ -106,7 +108,9 @@ export default class MyTHRRE {
         // 开启控制器阻尼
         this.controls.enableDamping = true;
         //渲染
-        this.render();
+        if (!this.sceneOptions.isAutoRender) {
+            this.controls.addEventListener('change', this.update.bind(this));
+        }
     }
     render(e) {
         //渲染
@@ -123,6 +127,9 @@ export default class MyTHRRE {
         this.camera.aspect = window.innerWidth / window.innerHeight;
         this.camera.updateProjectionMatrix();
         this.renderer.setSize(window.innerWidth, window.innerHeight);
+        if (!this.sceneOptions.isAutoRender) {
+            this.update();
+        }
     }
     // 添加坐标轴
     addAxesHelper() {
@@ -369,5 +376,17 @@ export default class MyTHRRE {
                 }
             }
         }
+    }
+    addGridHelper(options) {
+        options = Object.assign({
+            size: 100,
+            divisions: 100
+        }, options);
+        const gridHelper = new THREE.GridHelper(options.size, options.divisions);
+        this.scene.add(gridHelper);
+    }
+    update() {
+        this.animate()
+        this.renderer.render(this.scene, this.camera);
     }
 }
