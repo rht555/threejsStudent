@@ -94,6 +94,8 @@ export default class MyTHRRE {
             alpha: true
         });
         this.renderer.setPixelRatio(window.devicePixelRatio);
+        this.renderer.toneMapping = THREE.ReinhardToneMapping;//设置渲染器的色调映射模式
+        this.renderer.toneMappingExposure = 3;//设置渲染器的色调映射曝光度
         this.renderer.shadowMap.enabled = this.renderOptions.shadowMapEnabled;
         //设置渲染器大小
         this.renderer.setSize(window.innerWidth, window.innerHeight);
